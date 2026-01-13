@@ -3,11 +3,15 @@ package ex;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MUI_Sample {
 
+    static Map<String, Set<String>> concMap = new ConcurrentHashMap<>();
     Map<String, String> fieldMap = new HashMap<>();
 
     public String testGetAfterContainsKeyLocal() {
@@ -85,6 +89,16 @@ public class MUI_Sample {
 
     public List<String> testValuesSize(Map<String, String> m) {
         return new ArrayList<>(m.values().size());
+    }
+
+    public void testConcurrentAccess(String k, String v) {
+
+        Set<String> s = concMap.get(k);
+        if (s == null) {
+            s = new HashSet<>();
+            concMap.put(k, s);
+        }
+        s.add(v);
     }
 
     public String getAValue() {

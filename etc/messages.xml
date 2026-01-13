@@ -3389,6 +3389,21 @@ if ({{FLAWED_TEST_LOGIC}}) {
 		</Details>
 	</BugPattern>
 
+    <BugPattern type="MUI_USE_COMPUTEIFABSENT">
+        <ShortDescription>Method checks for a map entry for existence, and then puts the value in a non-atomic way</ShortDescription>
+        <LongDescription>Method {1} checks for a map entry for existence, and then puts the value in a non-atomic way</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method gets the value of a ConcurrentHashMap entry, checks to see if it's null, and then puts a value into the map.
+            This is not atomic in nature and goes against the value of using a ConcurrentHashMap, better to use
+            <code>
+            ConcurrentHashMap.computeIfAbsent instead.
+            </code>
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
+    
 	<BugPattern type="SPP_USE_ISEMPTY">
 		<ShortDescription>Method checks the size of a collection against zero rather than using isEmpty()</ShortDescription>
 		<LongDescription>Method {1} checks the size of a collection against zero rather than using isEmpty()</LongDescription>
