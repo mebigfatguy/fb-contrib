@@ -3404,6 +3404,19 @@ if ({{FLAWED_TEST_LOGIC}}) {
         </Details>
     </BugPattern>
     
+    <BugPattern type="MUI_RETURNING_NUTABLE_STATIC_MAP">
+        <ShortDescription>Method returns a mutable static map from a public method</ShortDescription>
+        <LongDescription>Method {1} returns a mutable static map from a public method</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method returns a private static map, allowing clients to modify the map without this class knowing it.
+            While this may be intended, it is usually better to wrap this map in Collections.unmodifiableMap to avoid this.
+            </code>
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
+    
 	<BugPattern type="SPP_USE_ISEMPTY">
 		<ShortDescription>Method checks the size of a collection against zero rather than using isEmpty()</ShortDescription>
 		<LongDescription>Method {1} checks the size of a collection against zero rather than using isEmpty()</LongDescription>

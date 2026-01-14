@@ -1,6 +1,7 @@
 package ex;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,7 +13,33 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MUI_Sample {
 
     static Map<String, Set<String>> concMap = new ConcurrentHashMap<>();
+    private static final Map<Integer, Integer> firingOrder = new HashMap<>();
+    private static final Map<Integer, Integer> fpMap;
+
+    static {
+        firingOrder.put(1, 8);
+        firingOrder.put(8, 4);
+        firingOrder.put(4, 3);
+        firingOrder.put(3, 6);
+        firingOrder.put(6, 5);
+        firingOrder.put(5, 7);
+        firingOrder.put(7, 2);
+        firingOrder.put(2, 1);
+
+        Map<Integer, Integer> fp = new HashMap<>();
+        fp.put(1, 1);
+        fpMap = Collections.unmodifiableMap(fp);
+    }
+
     Map<String, String> fieldMap = new HashMap<>();
+
+    public Map<Integer, Integer> getFiringOrder() {
+        return firingOrder;
+    }
+
+    public Map<Integer, Integer> fpMap() {
+        return fpMap;
+    }
 
     public String testGetAfterContainsKeyLocal() {
         Map<String, String> localMap = new HashMap<>();
