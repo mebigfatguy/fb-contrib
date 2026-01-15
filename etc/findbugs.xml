@@ -23,7 +23,7 @@
 
 	<!-- Detectors -->
 
-    <!-- COMMENT OUT FOR RELEASE
+    <!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -218,7 +218,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" speed="fast" reports="WOC_WRITE_ONLY_COLLECTION_LOCAL,WOC_WRITE_ONLY_COLLECTION_FIELD" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.UseVarArgs" speed="fast" reports="UVA_USE_VAR_ARGS,UVA_REMOVE_NULL_ARG" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UseVarArgs" speed="fast" reports="UVA_USE_VAR_ARGS,UVA_REMOVE_NULL_ARG,UVA_POSSIBLE_EXCESS_NULL" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.PossibleUnsuspectedSerialization" speed="fast" reports="PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION" />
 
@@ -320,7 +320,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.AnnotationIssues" speed="fast" reports="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.MapUsageIssues" speed="fast" reports="MUI_CONTAINSKEY_BEFORE_GET,MUI_GET_BEFORE_REMOVE,MUI_CALLING_SIZE_ON_SUBCONTAINER,MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR,MUI_USE_CONTAINSKEY"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MapUsageIssues" speed="fast" reports="MUI_CONTAINSKEY_BEFORE_GET,MUI_GET_BEFORE_REMOVE,MUI_CALLING_SIZE_ON_SUBCONTAINER,MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR,MUI_USE_CONTAINSKEY,MUI_USE_COMPUTEIFABSENT,MUI_RETURNING_NUTABLE_STATIC_MAP"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.collect.CollectNullableMethodStatus" speed="fast" reports="" hidden="true" />
     
@@ -342,9 +342,11 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues" speed="fast" reports="MK_CAPTOR_IN_WHEN,MK_MOCKED_FIELD_REASSIGNED,MK_SPIED_FIELD_REASSIGNED,MK_UNNEEDED_OPENMOCKS,MK_MOCKED_FIELD_IN_CODE,MK_SPIED_FIELD_IN_CODE,MK_USE_DORETURN,MK_UNNEEDED_VALIDATEMOCKITOUSAGE" />
 
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+    <!-- COMMENT OUT FOR POINT RELEASE
 
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SwitchIssues" speed="fast" reports="SI_USE_NULL_CASE" />
+
+    COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
@@ -551,6 +553,7 @@
 	<BugPattern abbrev="PCAIL" type="PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP" category="PERFORMANCE" />
 	<BugPattern abbrev="WOC" type="WOC_WRITE_ONLY_COLLECTION_LOCAL" category="CORRECTNESS" />
 	<BugPattern abbrev="WOC" type="WOC_WRITE_ONLY_COLLECTION_FIELD" category="CORRECTNESS" />
+	<BugPattern abbrev="UVA" type="UVA_POSSIBLE_EXCESS_NULL" category="CORRECTNESS" />
 	<BugPattern abbrev="UVA" type="UVA_USE_VAR_ARGS" category="STYLE" />
 	<BugPattern abbrev="UVA" type="UVA_REMOVE_NULL_ARG" category="STYLE" />
 	<BugPattern abbrev="PUS" type="PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION" category="CORRECTNESS" />
@@ -646,8 +649,10 @@
 	<BugPattern abbrev="MUI" type="MUI_CONTAINSKEY_BEFORE_GET" category="CORRECTNESS"/>
 	<BugPattern abbrev="MUI" type="MUI_GET_BEFORE_REMOVE" category="CORRECTNESS"/>
 	<BugPattern abbrev="MUI" type="MUI_CALLING_SIZE_ON_SUBCONTAINER" category="CORRECTNESS" />
-	<BugPattern abbrev="MUI" type="MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR" category="CORRECTNESS" />
+    <BugPattern abbrev="MUI" type="MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR" category="CORRECTNESS" />
+    <BugPattern abbrev="MUI" type="MUI_RETURNING_NUTABLE_STATIC_MAP" category="CORRECTNESS" />
 	<BugPattern abbrev="MUI" type="MUI_USE_CONTAINSKEY" category="CORRECTNESS" />
+	<BugPattern abbrev="MUI" type="MUI_USE_COMPUTEIFABSENT" category= "CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_SINGLETON_LIST" category="CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_COLLECTION_ADD" category="CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_GET0" category="CORRECTNESS" />
@@ -680,4 +685,5 @@
     <BugPattern abbrev="MK" type="MK_UNNEEDED_OPENMOCKS" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_USE_DORETURN" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_UNNEEDED_VALIDATEMOCKITOUSAGE" category="CORRECTNESS" />
+    <BugPattern abbrev="SI" type="SI_USE_NULL_CASE" category="STYLE" />
 </FindbugsPlugin>

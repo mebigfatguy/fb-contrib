@@ -1804,6 +1804,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
             ]]>
         </Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SwitchIssues">
+        <Details>
+            <![CDATA[
+            <p>Looks for various issues with switch usage.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -3379,6 +3389,34 @@ if ({{FLAWED_TEST_LOGIC}}) {
 		</Details>
 	</BugPattern>
 
+    <BugPattern type="MUI_USE_COMPUTEIFABSENT">
+        <ShortDescription>Method checks for a map entry for existence, and then puts the value in a non-atomic way</ShortDescription>
+        <LongDescription>Method {1} checks for a map entry for existence, and then puts the value in a non-atomic way</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method gets the value of a ConcurrentHashMap entry, checks to see if it's null, and then puts a value into the map.
+            This is not atomic in nature and goes against the value of using a ConcurrentHashMap, better to use
+            <code>
+            ConcurrentHashMap.computeIfAbsent instead.
+            </code>
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
+    
+    <BugPattern type="MUI_RETURNING_NUTABLE_STATIC_MAP">
+        <ShortDescription>Method returns a mutable static map from a public method</ShortDescription>
+        <LongDescription>Method {1} returns a mutable static map from a public method</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method returns a private static map, allowing clients to modify the map without this class knowing it.
+            While this may be intended, it is usually better to wrap this map in Collections.unmodifiableMap to avoid this.
+            </code>
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
+    
 	<BugPattern type="SPP_USE_ISEMPTY">
 		<ShortDescription>Method checks the size of a collection against zero rather than using isEmpty()</ShortDescription>
 		<LongDescription>Method {1} checks the size of a collection against zero rather than using isEmpty()</LongDescription>
@@ -4897,7 +4935,7 @@ if (name != null) {
 		</Details>
 	</BugPattern>
 	
-		<BugPattern type="UVA_REMOVE_NULL_ARG">
+	<BugPattern type="UVA_REMOVE_NULL_ARG">
 		<ShortDescription>Method passes explicit null value to var arg parameter</ShortDescription>
 		<LongDescription>Method {1} passes explicit null value to var arg parameter</LongDescription>
 		<Details>
@@ -4908,6 +4946,28 @@ if (name != null) {
 			]]>
 		</Details>
 	</BugPattern>
+
+    <BugPattern type="UVA_POSSIBLE_EXCESS_NULL">
+        <ShortDescription>Method potentially passes unexpected null to first var args parameter</ShortDescription>
+        <LongDescription>Method {1} potentially passes unexpected null to first var args parameter</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method calls a var arg method, and passes an explicit null value as the first argument in the list of 
+            var args. This may be perfectly fine, but can be a sign that the number of parameters passed to the method is incorrect.</p>
+            For instance, the method
+            
+            <code><pre>
+                void processFamily(String primary, Long age, String... dependents)
+            </pre></code>
+            might be called accidentally like
+            <code><pre>
+                processFamily("John Doe", null, null, "Jane Doe", "Mary Doe", "Bob Doe")
+            </code></pre>
+            because the method originally had a weight parameter after the age. Now that null goes to the var arg instead.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>	
 	
 	<BugPattern type="PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION">
 		<ShortDescription>Method serializes an instance of a non-static inner class</ShortDescription>
@@ -6953,6 +7013,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details> 
     </BugPattern>
     
+    <BugPattern type="SI_USE_NULL_CASE">
+        <ShortDescription>Method checks a switch variable for null outside of the switch itself</ShortDescription>
+        <LongDescription>Method {1} checks a switch variable for null outside of the switch itself</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method checks to see that a switch variable is not null before entering the switch. This 
+            was required before Java 17, however, now it is cleaner just to add a case null for it.
+            If you are using jdk's below 21, you would need to specify --enable-preview on the command line.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -7107,4 +7179,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     <BugCode abbrev="AKI">Akka Issues</BugCode>
     <BugCode abbrev="PKI">Pekko Issues</BugCode>
     <BugCode abbrev="MK">Mockito Issues</BugCode>
+    <BugCode abbrev="SI">Switch Issues</BugCode>>
 </MessageCollection>
