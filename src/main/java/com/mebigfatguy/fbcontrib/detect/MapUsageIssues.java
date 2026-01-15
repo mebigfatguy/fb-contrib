@@ -215,7 +215,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         XField xf = itm.getXField();
                         if (xf != null && staticMaps.contains(xf.getName())) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.MUI_RETURNING_NUTABLE_STATIC_MAP.name(), NORMAL_PRIORITY).addClass(this)
+                            bugReporter.reportBug(new BugInstance(this, BugType.MUI_RETURNING_MUTABLE_STATIC_MAP.name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                             staticMaps.remove(xf.getName());
                         }

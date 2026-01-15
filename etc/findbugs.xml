@@ -320,7 +320,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.AnnotationIssues" speed="fast" reports="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.MapUsageIssues" speed="fast" reports="MUI_CONTAINSKEY_BEFORE_GET,MUI_GET_BEFORE_REMOVE,MUI_CALLING_SIZE_ON_SUBCONTAINER,MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR,MUI_USE_CONTAINSKEY,MUI_USE_COMPUTEIFABSENT,MUI_RETURNING_NUTABLE_STATIC_MAP"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MapUsageIssues" speed="fast" reports="MUI_CONTAINSKEY_BEFORE_GET,MUI_GET_BEFORE_REMOVE,MUI_CALLING_SIZE_ON_SUBCONTAINER,MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR,MUI_USE_CONTAINSKEY,MUI_USE_COMPUTEIFABSENT,MUI_RETURNING_MUTABLE_STATIC_MAP"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.collect.CollectNullableMethodStatus" speed="fast" reports="" hidden="true" />
     
@@ -650,7 +650,7 @@
 	<BugPattern abbrev="MUI" type="MUI_GET_BEFORE_REMOVE" category="CORRECTNESS"/>
 	<BugPattern abbrev="MUI" type="MUI_CALLING_SIZE_ON_SUBCONTAINER" category="CORRECTNESS" />
     <BugPattern abbrev="MUI" type="MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR" category="CORRECTNESS" />
-    <BugPattern abbrev="MUI" type="MUI_RETURNING_NUTABLE_STATIC_MAP" category="CORRECTNESS" />
+    <BugPattern abbrev="MUI" type="MUI_RETURNING_MUTABLE_STATIC_MAP" category="CORRECTNESS" />
 	<BugPattern abbrev="MUI" type="MUI_USE_CONTAINSKEY" category="CORRECTNESS" />
 	<BugPattern abbrev="MUI" type="MUI_USE_COMPUTEIFABSENT" category= "CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_SINGLETON_LIST" category="CORRECTNESS" />

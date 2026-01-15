@@ -3404,7 +3404,7 @@ if ({{FLAWED_TEST_LOGIC}}) {
         </Details>
     </BugPattern>
     
-    <BugPattern type="MUI_RETURNING_NUTABLE_STATIC_MAP">
+    <BugPattern type="MUI_RETURNING_MUTABLE_STATIC_MAP">
         <ShortDescription>Method returns a mutable static map from a public method</ShortDescription>
         <LongDescription>Method {1} returns a mutable static map from a public method</LongDescription>
         <Details>
