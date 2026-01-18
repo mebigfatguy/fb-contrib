@@ -4001,6 +4001,16 @@ return new String[0];<br/>
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_PRIVATE_ANNOTATED_METHOD">
+        <ShortDescription>JUnit 5 annotated method is declared private</ShortDescription>
+        <LongDescription>JUnit 5 annotated method {1} is declared private</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This JUnit 5 annotated method has visibility private, you should change this to package private at least.</p>
+            ]]>
+        </Details>
+    </BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
 		<ShortDescription>TestNG test method passes constant to first (actual) assertion parameter</ShortDescription>

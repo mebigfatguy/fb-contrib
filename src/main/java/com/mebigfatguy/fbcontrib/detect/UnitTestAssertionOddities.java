@@ -75,6 +75,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
 
     private static final String TESTCASE_CLASS = "junit.framework.TestCase";
     private static final String TEST_CLASS = "org.junit.Test";
+    private static final String TEST5_CLASS = "org.junit.jupiter.api.Test";
     private static final String TEST_ANNOTATION_SIGNATURE = "Lorg/junit/Test;";
     private static final String OLD_ASSERT_CLASS = "junit/framework/Assert";
     private static final String NEW_ASSERT_CLASS = "org/junit/Assert";
@@ -94,6 +95,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private BugReporter bugReporter;
     private JavaClass testCaseClass;
     private JavaClass testAnnotationClass;
+    private JavaClass test5AnnotationClass;
     private JavaClass testNGAnnotationClass;
     private OpcodeStack stack;
     private boolean isTestCaseDerived;
@@ -124,7 +126,11 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         } catch (ClassNotFoundException cnfe) {
             testAnnotationClass = null;
         }
-
+        try {
+            test5AnnotationClass = Repository.lookupClass(TEST5_CLASS);
+        } catch (ClassNotFoundException cnfe) {
+            test5AnnotationClass = null;
+        }
         try {
             testNGAnnotationClass = Repository.lookupClass(TESTNG_CLASS);
         } catch (ClassNotFoundException cnfe) {
@@ -143,7 +149,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             JavaClass cls = classContext.getJavaClass();
             className = cls.getClassName().replace('.', '/');
             isTestCaseDerived = (testCaseClass != null) && cls.instanceOf(testCaseClass);
-            isAnnotationCapable = (cls.getMajor() >= 5) && ((testAnnotationClass != null) || (testNGAnnotationClass != null));
+            isAnnotationCapable = (cls.getMajor() >= 5) && ((testAnnotationClass != null) || (test5AnnotationClass != null) || (testNGAnnotationClass != null));
             if (isTestCaseDerived || isAnnotationCapable) {
                 stack = new OpcodeStack();
                 fieldsWithAnnotations = new HashSet<>();
@@ -154,6 +160,19 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         } finally {
             stack = null;
             fieldsWithAnnotations = null;
+        }
+    }
+
+    @Override
+    public void visitMethod(Method obj) {
+        if ((obj.getModifiers() & Const.ACC_PRIVATE) != 0) {
+            for (AnnotationEntry entry : obj.getAnnotationEntries()) {
+                if (entry.getAnnotationType().startsWith("Lorg/junit/jupiter/api/")) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_PRIVATE_ANNOTATED_METHOD.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this));
+                    break;
+                }
+            }
         }
     }
 
