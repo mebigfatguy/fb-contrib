@@ -71,20 +71,14 @@ public class MapUsageIssues extends BytecodeScanningDetector {
     private static final Set<String> COLLECTION_ACCESSORS = UnmodifiableSet.create("keySet", "entrySet", Values.VALUES);
     private static final String CONCURRENT_HASH_MAP = "Ljava/util/concurrent/ConcurrentHashMap;";
     private static JavaClass mapClass;
-    private static JavaClass concurrentHashMapClass;
 
-    private static List<String> NORMAL_CTORS = UnmodifiableList.create("<init>", "newHashMap");
+    private static List<String> NORMAL_CTORS = UnmodifiableList.create("<init>", "newHashMap", "newHashMapWithExpectedSize");
 
     static {
         try {
             mapClass = Repository.lookupClass("java/util/Map");
         } catch (ClassNotFoundException cnfe) {
             mapClass = null;
-        }
-        try {
-            concurrentHashMapClass = Repository.lookupClass("java/util/concurrent/HashMap");
-        } catch (ClassNotFoundException cnfe) {
-            concurrentHashMapClass = null;
         }
     }
 
@@ -245,13 +239,13 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                     }
 
                     if (seen == Const.IFNONNULL) {
-                        userValue = (ConcStatus) itm.getUserValue();
-                        if (userValue != null) {
+                        ConcStatus cs = (ConcStatus) itm.getUserValue();
+                        if (cs != null) {
                             int target = this.getBranchTarget();
                             if (target > getPC()) {
-                                userValue.setCheckEnd(target);
+                                cs.setCheckEnd(target);
                             } else {
-                                userValue.setCheckEnd(0);
+                                cs.setCheckEnd(0);
                             }
                         }
 

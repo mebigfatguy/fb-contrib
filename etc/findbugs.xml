@@ -328,7 +328,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_REFERENCE,FII_AVOID_CONTAINS_ON_COLLECTED_STREAM,FII_USE_ANY_MATCH,FII_USE_FIND_FIRST,FII_COMBINE_FILTERS,FII_USE_FUNCTION_IDENTITY,FII_AVOID_SIZE_ON_COLLECTED_STREAM,FII_USE_COPYCONSTRUCTOR,FII_AVOID_MAP_BEFORE_LIMIT,FII_AVOID_TOARRAY_ON_COLLECTED_STREAM,FII_USE_ARRAYS_STREAM,FII_USE_ANY_LIMIT_WITH_COUNT" />
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.SetUsageIssues" speed="fast" reports="SUI_CONTAINS_BEFORE_ADD,SUI_CONTAINS_BEFORE_REMOVE"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SetUsageIssues" speed="fast" reports="SUI_CONTAINS_BEFORE_ADD,SUI_CONTAINS_BEFORE_REMOVE,SUI_RETURNING_MUTABLE_STATIC_MAP"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="slow" reports="CE_CLASS_ENVY" />  
 
@@ -671,6 +671,7 @@
 	<BugPattern abbrev="FII" type="FII_USE_ANY_LIMIT_WITH_COUNT" category="CORRECTNESS" />
 	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_ADD" category="CORRECTNESS"/>
 	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_REMOVE" category="CORRECTNESS" />
+	<BugPattern abbrev="SUI" type="SUI_RETURNING_MUTABLE_STATIC_MAP" category="CORRECTNESS" />
     <BugPattern abbrev="SAT" type="SAT_SUSPICIOUS_ARGUMENT_TYPES" category="CORRECTNESS" />
     <BugPattern abbrev="ENMI" type="ENMI_NULL_ENUM_VALUE" category="CORRECTNESS"/>
     <BugPattern abbrev="ENMI" type="ENMI_ONE_ENUM_VALUE" category="CORRECTNESS" />

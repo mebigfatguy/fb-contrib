@@ -6834,6 +6834,19 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="SUI_RETURNING_MUTABLE_STATIC_MAP">
+        <ShortDescription>Method returns a mutable static set from a public method</ShortDescription>
+        <LongDescription>Method {1} returns a mutable static set from a public method</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method returns a private static set, allowing clients to modify the set without this class knowing it.
+            While this may be intended, it is usually better to wrap this set in Collections.unmodifiableSet to avoid this.
+            </code>
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
 
     <BugPattern type="SAT_SUSPICIOUS_ARGUMENT_TYPES">
         <ShortDescription>This method invokes a method with parameters that seem incorrect for their intended use</ShortDescription>
