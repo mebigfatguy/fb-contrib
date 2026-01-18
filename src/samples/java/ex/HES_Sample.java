@@ -2,6 +2,7 @@ package ex;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +51,6 @@ class SingleThreadExecutorProblem {
         executor.execute(new SampleExecutable());
         executor.execute(new SampleExecutable());
     }
-
 }
 
 class SingleThreadExecutorGood {
@@ -136,6 +136,20 @@ class SingleThreadExecutorTryProblem {
             e.printStackTrace();
         }
 
+    }
+}
+
+class SingleThreadScheduledExecutorBad {
+    // no tag
+    private ScheduledExecutorService executor;
+
+    public SingleThreadScheduledExecutorBad() {
+        this.executor = Executors.newSingleThreadScheduledExecutor();
+    }
+
+    public void test() {
+        executor.execute(new SampleExecutable());
+        executor.execute(new SampleExecutable());
     }
 }
 

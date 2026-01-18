@@ -20,22 +20,31 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.detect.MapUsageIssues.BugLocation;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -46,16 +55,24 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class SetUsageIssues extends BytecodeScanningDetector {
 
-    private static final FQMethod CONTAINS_METHOD = new FQMethod("java/util/Set", "contains",
-            SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
-    private static final FQMethod ADD_METHOD = new FQMethod("java/util/Set", "add",
-            SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
-    private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Set", "remove",
-            SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final FQMethod CONTAINS_METHOD = new FQMethod("java/util/Set", "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final FQMethod ADD_METHOD = new FQMethod("java/util/Set", "add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Set", "remove", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static JavaClass setClass;
+
+    static {
+        try {
+            setClass = Repository.lookupClass("java/util/Set");
+        } catch (ClassNotFoundException cnfe) {
+            setClass = null;
+        }
+    }
+    private static List<String> NORMAL_CTORS = UnmodifiableList.create("<init>", "newHashSet", "newHashSetWithExpectedSize");
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Map<SetRef, Contains> setContainsUsed;
+    private Map<String, BugLocation> staticSets;
 
     /**
      * constructs a SUI detector given the reporter to report bugs on
@@ -71,8 +88,18 @@ public class SetUsageIssues extends BytecodeScanningDetector {
         try {
             stack = new OpcodeStack();
             setContainsUsed = new HashMap<>();
+            staticSets = new HashMap<>();
             super.visitClassContext(classContext);
+
+            for (BugLocation loc : staticSets.values()) {
+                if (loc != null) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.SUI_RETURNING_MUTABLE_STATIC_MAP.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(loc.getMethodAnnotation()).addSourceLine(loc.getSrcLineAnnotation()));
+                }
+            }
+
         } finally {
+            staticSets = null;
             setContainsUsed = null;
             stack = null;
         }
@@ -83,6 +110,36 @@ public class SetUsageIssues extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
         setContainsUsed.clear();
         super.visitCode(obj);
+    }
+
+    @Override
+    public void visitField(Field obj) {
+        int mod = obj.getModifiers();
+        if ((mod & Const.ACC_STATIC) == 0) {
+            return;
+        }
+        if ((mod & Const.ACC_PRIVATE) == 0) {
+            return;
+        }
+        if ((mod & Const.ACC_SYNTHETIC) != 0) {
+            return;
+        }
+
+        if (obj.getName().contains("$")) {
+            return;
+        }
+
+        try {
+            String sig = obj.getSignature();
+            if (sig.startsWith("L") && !sig.startsWith("Ljava/lang/")) {
+                JavaClass fieldClass = Repository.lookupClass(SignatureUtils.stripSignature(sig));
+                if (fieldClass.instanceOf(setClass)) {
+                    staticSets.put(obj.getName(), null);
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
     }
 
     @Override
@@ -99,9 +156,37 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                 }
             }
 
-            if (seen == Const.INVOKEINTERFACE) {
-                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
-                        getSigConstantOperand());
+            if (seen == Const.PUTSTATIC) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (staticSets.containsKey(getNameConstantOperand())) {
+                        XMethod rv = itm.getReturnValueOf();
+                        if (rv != null) {
+                            String name = rv.getName();
+                            if (!NORMAL_CTORS.contains(name)) {
+                                staticSets.remove(getNameConstantOperand());
+                            }
+                        } else {
+                            String sig = itm.getSignature();
+                            if (sig.contains("Unmodifiable") || sig.contains("Immutable") || sig.contains("Singleton") || sig.contains("EmptySet")) {
+                                staticSets.remove(getNameConstantOperand());
+                            }
+                        }
+                    }
+                }
+            } else if (seen == Const.ARETURN) {
+                if ((getMethod().getModifiers() & (Const.ACC_PUBLIC | Const.ACC_SYNTHETIC)) == Const.ACC_PUBLIC) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        XField xf = itm.getXField();
+                        if (xf != null && staticSets.containsKey(xf.getName())) {
+                            staticSets.put(xf.getName(),
+                                    new BugLocation(MethodAnnotation.fromVisitedMethod(this), SourceLineAnnotation.fromVisitedInstruction(this)));
+                        }
+                    }
+                }
+            } else if (seen == Const.INVOKEINTERFACE) {
+                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (CONTAINS_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         SetRef sr = new SetRef(stack.getStackItem(1));
@@ -112,20 +197,18 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         Contains contains = setContainsUsed.remove(new SetRef(itm));
-                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains)
-                                && !contains.isContained()) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_ADD.name(),
-                                    contains.getReportLevel()).addClass(this).addMethod(this).addSourceLine(this));
+                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains) && !contains.isContained()) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_ADD.name(), contains.getReportLevel()).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
                         }
                     }
                 } else if (REMOVE_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         Contains contains = setContainsUsed.remove(new SetRef(itm));
-                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains)
-                                && contains.isContained()) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_REMOVE.name(),
-                                    contains.getReportLevel()).addClass(this).addMethod(this).addSourceLine(this));
+                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains) && contains.isContained()) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_REMOVE.name(), contains.getReportLevel()).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
                         }
                     }
                 }

@@ -3404,7 +3404,7 @@ if ({{FLAWED_TEST_LOGIC}}) {
         </Details>
     </BugPattern>
     
-    <BugPattern type="MUI_RETURNING_NUTABLE_STATIC_MAP">
+    <BugPattern type="MUI_RETURNING_MUTABLE_STATIC_MAP">
         <ShortDescription>Method returns a mutable static map from a public method</ShortDescription>
         <LongDescription>Method {1} returns a mutable static map from a public method</LongDescription>
         <Details>
@@ -4001,6 +4001,16 @@ return new String[0];<br/>
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_PRIVATE_ANNOTATED_METHOD">
+        <ShortDescription>JUnit 5 annotated method is declared private</ShortDescription>
+        <LongDescription>JUnit 5 annotated method {1} is declared private</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This JUnit 5 annotated method has visibility private, you should change this to package private at least.</p>
+            ]]>
+        </Details>
+    </BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
 		<ShortDescription>TestNG test method passes constant to first (actual) assertion parameter</ShortDescription>
@@ -6829,6 +6839,19 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
                 if (mySet.remove("foo")) {
                 }
             </pre>
+            </code>
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
+    
+    <BugPattern type="SUI_RETURNING_MUTABLE_STATIC_MAP">
+        <ShortDescription>Method returns a mutable static set from a public method</ShortDescription>
+        <LongDescription>Method {1} returns a mutable static set from a public method</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method returns a private static set, allowing clients to modify the set without this class knowing it.
+            While this may be intended, it is usually better to wrap this set in Collections.unmodifiableSet to avoid this.
             </code>
             </p>
             ]]>

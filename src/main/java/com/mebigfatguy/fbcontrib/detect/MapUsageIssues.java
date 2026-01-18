@@ -19,7 +19,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +46,10 @@ import com.mebigfatguy.fbcontrib.utils.Values;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.MethodAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -70,20 +71,14 @@ public class MapUsageIssues extends BytecodeScanningDetector {
     private static final Set<String> COLLECTION_ACCESSORS = UnmodifiableSet.create("keySet", "entrySet", Values.VALUES);
     private static final String CONCURRENT_HASH_MAP = "Ljava/util/concurrent/ConcurrentHashMap;";
     private static JavaClass mapClass;
-    private static JavaClass concurrentHashMapClass;
 
-    private static List<String> NORMAL_CTORS = UnmodifiableList.create("<init>", "newHashMap");
+    private static List<String> NORMAL_CTORS = UnmodifiableList.create("<init>", "newHashMap", "newHashMapWithExpectedSize");
 
     static {
         try {
             mapClass = Repository.lookupClass("java/util/Map");
         } catch (ClassNotFoundException cnfe) {
             mapClass = null;
-        }
-        try {
-            concurrentHashMapClass = Repository.lookupClass("java/util/concurrent/HashMap");
-        } catch (ClassNotFoundException cnfe) {
-            concurrentHashMapClass = null;
         }
     }
 
@@ -92,7 +87,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
     private Map<MapRef, ContainsKey> mapContainsKeyUsed;
     private Map<MapRef, Get> mapGetUsed;
     private Map<String, ConcStatus> concurrentHashMapFields;
-    private Set<String> staticMaps;
+    private Map<String, BugLocation> staticMaps;
 
     /**
      * constructs a MUI detector given the reporter to report bugs on
@@ -110,8 +105,15 @@ public class MapUsageIssues extends BytecodeScanningDetector {
             mapContainsKeyUsed = new HashMap<>();
             mapGetUsed = new HashMap<>();
             concurrentHashMapFields = new HashMap<>();
-            staticMaps = new HashSet<>();
+            staticMaps = new HashMap<>();
             super.visitClassContext(classContext);
+
+            for (BugLocation loc : staticMaps.values()) {
+                if (loc != null) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.MUI_RETURNING_MUTABLE_STATIC_MAP.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(loc.getMethodAnnotation()).addSourceLine(loc.getSrcLineAnnotation()));
+                }
+            }
         } finally {
             staticMaps = null;
             concurrentHashMapFields = null;
@@ -151,7 +153,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
             if (sig.startsWith("L") && !sig.startsWith("Ljava/lang/")) {
                 JavaClass fieldClass = Repository.lookupClass(SignatureUtils.stripSignature(sig));
                 if (fieldClass.instanceOf(mapClass)) {
-                    staticMaps.add(obj.getName());
+                    staticMaps.put(obj.getName(), null);
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -194,7 +196,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         concurrentHashMapFields.remove(getNameConstantOperand());
                     }
 
-                    if (staticMaps.contains(getNameConstantOperand())) {
+                    if (staticMaps.containsKey(getNameConstantOperand())) {
                         XMethod rv = itm.getReturnValueOf();
                         if (rv != null) {
                             String name = rv.getName();
@@ -203,7 +205,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                             }
                         } else {
                             String sig = itm.getSignature();
-                            if (sig.contains("Unmodifiable") || sig.contains("Ummutable") || sig.contains("Singleton")) {
+                            if (sig.contains("Unmodifiable") || sig.contains("Immutable") || sig.contains("Singleton") || sig.contains("EmptyMap")) {
                                 staticMaps.remove(getNameConstantOperand());
                             }
                         }
@@ -214,10 +216,9 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         XField xf = itm.getXField();
-                        if (xf != null && staticMaps.contains(xf.getName())) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.MUI_RETURNING_NUTABLE_STATIC_MAP.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                            staticMaps.remove(xf.getName());
+                        if (xf != null && staticMaps.containsKey(xf.getName())) {
+                            staticMaps.put(xf.getName(),
+                                    new BugLocation(MethodAnnotation.fromVisitedMethod(this), SourceLineAnnotation.fromVisitedInstruction(this)));
                         }
                     }
                 }
@@ -238,13 +239,13 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                     }
 
                     if (seen == Const.IFNONNULL) {
-                        userValue = (ConcStatus) itm.getUserValue();
-                        if (userValue != null) {
+                        ConcStatus cs = (ConcStatus) itm.getUserValue();
+                        if (cs != null) {
                             int target = this.getBranchTarget();
                             if (target > getPC()) {
-                                userValue.setCheckEnd(target);
+                                cs.setCheckEnd(target);
                             } else {
-                                userValue.setCheckEnd(0);
+                                cs.setCheckEnd(0);
                             }
                         }
 
@@ -541,6 +542,24 @@ public class MapUsageIssues extends BytecodeScanningDetector {
         public void setCheckEnd(int checkEnd) {
             this.checkEnd = checkEnd;
         }
+    }
 
+    static class BugLocation {
+        private final MethodAnnotation methodAnnotation;
+        private final SourceLineAnnotation srcLineAnnotation;
+
+        public BugLocation(MethodAnnotation methodAnnotation, SourceLineAnnotation srcLineAnnotation) {
+            super();
+            this.methodAnnotation = methodAnnotation;
+            this.srcLineAnnotation = srcLineAnnotation;
+        }
+
+        public MethodAnnotation getMethodAnnotation() {
+            return methodAnnotation;
+        }
+
+        public SourceLineAnnotation getSrcLineAnnotation() {
+            return srcLineAnnotation;
+        }
     }
 }

@@ -32,8 +32,7 @@
 	<property name="javac.debug" value="on" />
 	<property name="test_reports.dir" value="${target.dir}/reports/test"/>
 
-	<property name="contrib.version" value="7.7.3" />
-
+	<property name="contrib.version" value="7.7.4" />
 
 	<property name="sonatype.dir" value="${user.home}/.${ant.project.name}-${contrib.version}-sonatype" />
 	<property name="sonatype.version.dir" value="${sonatype.dir}/com/mebigfatguy/${ant.project.name}/${ant.project.name}/${contrib.version}" />
