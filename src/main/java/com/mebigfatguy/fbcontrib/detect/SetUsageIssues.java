@@ -168,7 +168,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                             }
                         } else {
                             String sig = itm.getSignature();
-                            if (sig.contains("Unmodifiable") || sig.contains("Immutable") || sig.contains("Singleton")) {
+                            if (sig.contains("Unmodifiable") || sig.contains("Immutable") || sig.contains("Singleton") || sig.contains("EmptySet")) {
                                 staticSets.remove(getNameConstantOperand());
                             }
                         }
@@ -182,22 +182,6 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                         if (xf != null && staticSets.containsKey(xf.getName())) {
                             staticSets.put(xf.getName(),
                                     new BugLocation(MethodAnnotation.fromVisitedMethod(this), SourceLineAnnotation.fromVisitedInstruction(this)));
-                        }
-                    }
-                }
-            } else if (seen == Const.IFNONNULL) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-
-                    if (seen == Const.IFNONNULL) {
-                        ConcStatus cs = (ConcStatus) itm.getUserValue();
-                        if (cs != null) {
-                            int target = this.getBranchTarget();
-                            if (target > getPC()) {
-                                cs.setCheckEnd(target);
-                            } else {
-                                cs.setCheckEnd(0);
-                            }
                         }
                     }
                 }
@@ -250,28 +234,6 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(userValue);
             }
-        }
-    }
-
-    static class ConcStatus {
-
-        private final String fieldName;
-        private int checkEnd;
-
-        public ConcStatus(String fieldName) {
-            this.fieldName = fieldName;
-        }
-
-        public String getFieldName() {
-            return fieldName;
-        }
-
-        public int getCheckEnd() {
-            return checkEnd;
-        }
-
-        public void setCheckEnd(int checkEnd) {
-            this.checkEnd = checkEnd;
         }
     }
 

@@ -10,6 +10,7 @@ public class SUI_Sample {
 
     private static final Set<Integer> fib = new HashSet<>();
     private static final Set<Integer> fpSet;
+    private static final Set<String> nuttin = Collections.emptySet();
 
     static {
         fib.add(1);
@@ -34,6 +35,10 @@ public class SUI_Sample {
 
     public Set<Integer> fpSet() {
         return fpSet;
+    }
+
+    public Set<String> fpGetNuttin() {
+        return nuttin;
     }
 
     public void testAddAfterContains(Set<String> ss) {

@@ -205,7 +205,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                             }
                         } else {
                             String sig = itm.getSignature();
-                            if (sig.contains("Unmodifiable") || sig.contains("Immutable") || sig.contains("Singleton")) {
+                            if (sig.contains("Unmodifiable") || sig.contains("Immutable") || sig.contains("Singleton") || sig.contains("EmptyMap")) {
                                 staticMaps.remove(getNameConstantOperand());
                             }
                         }
