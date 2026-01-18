@@ -35,7 +35,6 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
-import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -58,13 +57,13 @@ import edu.umd.cs.findbugs.ba.XMethod;
 public class HangingExecutors extends BytecodeScanningDetector {
 
     private static final Set<String> hangableSig = UnmodifiableSet.create("Ljava/util/concurrent/ExecutorService;",
-            "Ljava/util/concurrent/AbstractExecutorService;", "Ljava/util/concurrent/ForkJoinPool;",
-            "Ljava/util/concurrent/ScheduledThreadPoolExecutor;", "Ljava/util/concurrent/ThreadPoolExecutor;");
+            "Ljava/util/concurrent/AbstractExecutorService;", "Ljava/util/concurrent/ForkJoinPool;", "Ljava/util/concurrent/ScheduledThreadPoolExecutor;",
+            "Ljava/util/concurrent/ThreadPoolExecutor;", "Ljava/util/concurrent/ScheduledExecutorService;");
 
     private static final Set<String> shutdownMethods = UnmodifiableSet.create("shutdown", "shutdownNow");
 
     private final BugReporter bugReporter;
-    private Map<XField, AnnotationPriority> hangingFieldCandidates;
+    private Map<XField, FieldAnnotation> hangingFieldCandidates;
     private Map<XField, Integer> exemptExecutors;
     private OpcodeStack stack;
     private String methodName;
@@ -113,20 +112,18 @@ public class HangingExecutors extends BytecodeScanningDetector {
         for (Field f : fields) {
             String sig = f.getSignature();
             if (hangableSig.contains(sig)) {
-                hangingFieldCandidates.put(
-                        XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()),
-                        new AnnotationPriority(FieldAnnotation.fromBCELField(cls, f), NORMAL_PRIORITY));
+                hangingFieldCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()),
+                        FieldAnnotation.fromBCELField(cls, f));
             }
         }
     }
 
     private void reportHangingExecutorFieldBugs() {
-        for (Entry<XField, AnnotationPriority> entry : hangingFieldCandidates.entrySet()) {
-            AnnotationPriority fieldAn = entry.getValue();
+        for (Entry<XField, FieldAnnotation> entry : hangingFieldCandidates.entrySet()) {
+            FieldAnnotation fieldAn = entry.getValue();
             if (fieldAn != null) {
-                bugReporter
-                        .reportBug(new BugInstance(this, BugType.HES_EXECUTOR_NEVER_SHUTDOWN.name(), fieldAn.priority)
-                                .addClass(this).addField(fieldAn.annotation).addField(entry.getKey()));
+                bugReporter.reportBug(new BugInstance(this, BugType.HES_EXECUTOR_NEVER_SHUTDOWN.name(), NORMAL_PRIORITY).addClass(this).addField(fieldAn)
+                        .addField(entry.getKey()));
             }
         }
     }
@@ -220,26 +217,20 @@ public class HangingExecutors extends BytecodeScanningDetector {
                     // look at the top of the stack, get the arguments passed
                     // into the function that was called
                     // and then pull out the types.
-                    // if the last type is a ThreadFactory, set the priority to
+                    // if the last type is a ThreadFactory, remove it
                     // low
                     XMethod method = stack.getStackItem(0).getReturnValueOf();
                     if (method != null) {
                         List<String> argumentTypes = SignatureUtils.getParameterSignatures(method.getSignature());
-                        if ((!argumentTypes.isEmpty()) && "Ljava/util/concurrent/ThreadFactory;"
-                                .equals(argumentTypes.get(argumentTypes.size() - 1))) {
-                            AnnotationPriority ap = this.hangingFieldCandidates.get(f);
-                            if (ap != null) {
-                                ap.priority = LOW_PRIORITY;
-                                this.hangingFieldCandidates.put(f, ap);
-                            }
+                        if ((!argumentTypes.isEmpty()) && "Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes.get(argumentTypes.size() - 1))) {
+                            hangingFieldCandidates.remove(f);
                         }
                     } else {
                         // if the object is initialized from parameter, it's not this class's job to
                         // close it
                         int reg = stack.getStackItem(0).getRegisterNumber();
                         if (reg >= 0) {
-                            Map<Integer, String> ctorParmInfo = SignatureUtils.getParameterSlotAndSignatures(false,
-                                    getMethod().getSignature());
+                            Map<Integer, String> ctorParmInfo = SignatureUtils.getParameterSlotAndSignatures(false, getMethod().getSignature());
                             if (ctorParmInfo.containsKey(Integer.valueOf(reg))) {
                                 hangingFieldCandidates.remove(f);
                             }
@@ -254,8 +245,8 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
     private void reportOverwrittenField(XField f) {
         if ("Ljava/util/concurrent/ExecutorService;".equals(f.getSignature()) && !checkException(f)) {
-            bugReporter.reportBug(new BugInstance(this, BugType.HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN.name(),
-                    Priorities.NORMAL_PRIORITY).addClass(this).addMethod(this).addField(f).addSourceLine(this));
+            bugReporter.reportBug(new BugInstance(this, BugType.HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN.name(), Priorities.NORMAL_PRIORITY).addClass(this)
+                    .addMethod(this).addField(f).addSourceLine(this));
         }
         // after it's been replaced, it no longer uses its exemption.
         exemptExecutors.remove(f);
@@ -298,25 +289,6 @@ public class HangingExecutors extends BytecodeScanningDetector {
             if (shutdownMethods.contains(methodBeingInvoked)) {
                 hangingFieldCandidates.remove(fieldOnWhichMethodIsInvoked);
             }
-        }
-    }
-
-    /**
-     * represents a field that is a executor
-     */
-    private static class AnnotationPriority {
-
-        int priority;
-        FieldAnnotation annotation;
-
-        AnnotationPriority(FieldAnnotation annotation, int priority) {
-            this.annotation = annotation;
-            this.priority = priority;
-        }
-
-        @Override
-        public String toString() {
-            return ToString.build(this);
         }
     }
 }
@@ -370,8 +342,8 @@ class LocalHangingExecutor extends LocalTypeDetector {
     protected void reportBug(RegisterInfo cri) {
         // very important to report the bug under the top, parent detector,
         // otherwise it gets filtered out
-        bugReporter.reportBug(new BugInstance(delegatingDetector, "HES_LOCAL_EXECUTOR_SERVICE", LOW_PRIORITY)
-                .addClass(this).addMethod(this).addSourceLine(cri.getSourceLineAnnotation()));
+        bugReporter.reportBug(new BugInstance(delegatingDetector, "HES_LOCAL_EXECUTOR_SERVICE", LOW_PRIORITY).addClass(this).addMethod(this)
+                .addSourceLine(cri.getSourceLineAnnotation()));
 
     }
 }
