@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 @CustomUserValue
 public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private enum State {
-        SAW_NOTHING, SAW_IF_ICMPNE, SAW_IF_NE, SAW_IF_ICMPEQ, SAW_ICONST_1, SAW_GOTO, SAW_ICONST_0, SAW_EQUALS
+        SAW_NOTHING, SAW_IF_ICMPNE, SAW_IF_NE, SAW_IF_EQ, SAW_IF_ICMPEQ, SAW_ICONST_1, SAW_GOTO, SAW_ICONST_0, SAW_EQUALS
     }
 
     private enum TestFrameworkType {
@@ -365,18 +365,41 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             }
 
             switch (state) {
-            case SAW_NOTHING:
             case SAW_EQUALS:
+                if (seen == Const.IFNE) {
+                    state = State.SAW_IF_NE;
+                    checkIsNegated = true;
+                } else if (seen == Const.IFEQ) {
+                    state = State.SAW_IF_EQ;
+                    checkIsNegated = false;
+                } else {
+                    state = State.SAW_NOTHING;
+                }
+                break;
+            case SAW_NOTHING:
                 // starting the chain, reset to false
                 checkIsNegated = false;
                 if (seen == Const.IF_ICMPNE) {
                     state = State.SAW_IF_ICMPNE;
-                } else if (seen == Const.IFNE) {
-                    state = State.SAW_IF_NE;
-                    checkIsNegated = true;
                 } else if (seen == Const.IF_ICMPEQ) {
                     state = State.SAW_IF_ICMPEQ;
                     checkIsNegated = true;
+                } else if (seen == Const.IFNE && stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if ("I".equals(itm.getSignature())) {
+                        checkIsNegated = false;
+                        state = State.SAW_IF_NE;
+                    } else {
+                        state = State.SAW_NOTHING;
+                    }
+                } else if (seen == Const.IFEQ && stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if ("I".equals(itm.getSignature())) {
+                        checkIsNegated = false;
+                        state = State.SAW_IF_EQ;
+                    } else {
+                        state = State.SAW_NOTHING;
+                    }
                 } else {
                     state = State.SAW_NOTHING;
                 }
@@ -384,6 +407,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
 
             case SAW_IF_ICMPEQ:
             case SAW_IF_NE:
+            case SAW_IF_EQ:
             case SAW_IF_ICMPNE:
                 if (seen == Const.ICONST_1) {
                     state = State.SAW_ICONST_1;
