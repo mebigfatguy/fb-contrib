@@ -47,9 +47,9 @@ public class OI_Sample implements OptInf386 {
 
     public String fpDelayedOK(Optional<String> o, String a, String b) {
 
-    	return o.orElseGet(() -> String.format("%s boo %s hiss", a, b));
+        return o.orElseGet(() -> String.format("%s boo %s hiss", a, b));
     }
-    
+
     public String fpImmediateOK(Optional<String> o, final String a) {
 
         return o.orElse(a);
@@ -63,9 +63,9 @@ public class OI_Sample implements OptInf386 {
     public Long fpBoxingIsTooCommon(Optional<Long> o) {
         return o.orElse(0L);
     }
-    
+
     public Collection<String> fpemptySetIsTooCommon(Optional<Collection<String>> c) {
-    	return c.orElse(Collections.emptySet());
+        return c.orElse(Collections.emptySet());
     }
 
     private Optional<String> get(String name) {
@@ -75,16 +75,30 @@ public class OI_Sample implements OptInf386 {
     public String fpGet384(String parameterName, Supplier<String> defaultValueSupplier) {
         return this.<String>get(parameterName).orElseGet(defaultValueSupplier);
     }
-    
+
     public boolean equalsToEmpty(Optional<String> foo) {
-    	return foo.equals(Optional.empty());
+        return foo.equals(Optional.empty());
     }
-    
-    public 	Optional<Object> fpGetOpt386() {
-    	return Optional.of(Double.valueOf(10));
+
+    @Override
+    public Optional<Object> fpGetOpt386() {
+        return Optional.of(Double.valueOf(10));
+    }
+
+    public String orElseNull(Optional<Class> s) {
+        return s.orElse(null).getName();
+    }
+
+    public String fpOrElseNull(Optional<Class> s) {
+        Class<?> cls = s.orElse(null);
+        if (cls != null) {
+            return cls.getName();
+        }
+
+        return null;
     }
 }
 
 interface OptInf386 {
-	Optional<Object> fpGetOpt386();
+    Optional<Object> fpGetOpt386();
 }

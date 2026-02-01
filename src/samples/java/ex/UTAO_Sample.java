@@ -80,6 +80,10 @@ public class UTAO_Sample extends TestCase {
         Assert.assertEquals(1.0f, foo, 0.1);
         Assert.assertEquals(20, boo, 0);
     }
+
+    public void testNPCompoundCondition(int root) {
+        Assert.assertTrue(root == 0 || root == 1);
+    }
 }
 
 class New {
@@ -215,8 +219,7 @@ class GitHubIssue207 {
     public void testAssertTrueIsOK() throws ClassNotFoundException {
         Class<?> clazz = Class.forName("java.lang.Object");
         for (final Method method : clazz.getMethods()) {
-            Assert.assertTrue("method should be static:" + method,
-                    Modifier.isStatic(method.getModifiers()) || !method.getDeclaringClass().equals(clazz));
+            Assert.assertTrue("method should be static:" + method, Modifier.isStatic(method.getModifiers()) || !method.getDeclaringClass().equals(clazz));
         }
     }
 }

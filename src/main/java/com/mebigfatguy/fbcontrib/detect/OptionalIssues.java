@@ -42,6 +42,7 @@ import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -210,6 +211,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         FQMethod curCalledMethod = null;
         OptionalType optionalType = null;
+        Boolean userValue = null;
 
         try {
             switch (seen) {
@@ -221,8 +223,15 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_CHECKING_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
                                 .addMethod(this).addSourceLine(this));
                     }
-
                 }
+                break;
+
+            case Const.ALOAD:
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3:
+                userValue = Boolean.FALSE;
                 break;
 
             case Const.INVOKEDYNAMIC:
@@ -249,6 +258,10 @@ public class OptionalIssues extends BytecodeScanningDetector {
                             optionalType = OptionalType.BOXED;
                         }
                     }
+                }
+
+                if (seen == Const.INVOKEINTERFACE) {
+                    checkCallOnOrElseNull();
                 }
                 break;
             }
@@ -279,8 +292,13 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         }
                     }
                     if (OPTIONAL_OR_ELSE_METHOD.equals(curCalledMethod)) {
-                        ;
                         optionalType = OptionalType.PLAIN;
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (itm.isNull()) {
+                                userValue = Boolean.TRUE;
+                            }
+                        }
                     }
                 } else if (OR_ELSE_GET_METHODS.contains(curCalledMethod)) {
                     if (!activeStackOps.isEmpty()) {
@@ -314,6 +332,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 } else if (OPTIONAL_GET_METHOD.equals(curCalledMethod)) {
                     optionalType = OptionalType.PLAIN;
                 }
+
+                checkCallOnOrElseNull();
                 break;
 
             case Const.ARETURN:
@@ -330,6 +350,12 @@ public class OptionalIssues extends BytecodeScanningDetector {
         } finally {
             stack.sawOpcode(this, seen);
             int stackDepth = stack.getStackDepth();
+
+            if (userValue != null && stackDepth > 0) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(userValue);
+            }
+
             if (stackDepth == 0) {
                 activeStackOps.clear();
             } else {
@@ -339,11 +365,23 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 }
                 if (optionalType != null) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
-                    itm.setUserValue(optionalType);
                     if (optionalType == OptionalType.BOXED) {
                         boxedItems.put(itm, SourceLineAnnotation.fromVisitedInstruction(OptionalIssues.this.getClassContext(), OptionalIssues.this, getPC()));
                     }
                 }
+
+            }
+        }
+    }
+
+    private void checkCallOnOrElseNull() {
+        String sig = getSigConstantOperand();
+        int numParms = SignatureUtils.getNumParameters(sig);
+        if (stack.getStackDepth() > numParms) {
+            OpcodeStack.Item itm = stack.getStackItem(numParms);
+            if (Boolean.TRUE.equals(itm.getUserValue())) {
+                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_OR_ELSE_NULL_CALL.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(this));
             }
         }
     }
