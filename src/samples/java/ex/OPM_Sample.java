@@ -137,3 +137,11 @@ class GitHubIssue437 implements GHI437Inf {
 interface GHI437Inf {
     Object getObj(int type);
 }
+
+enum GitHubIssue511 {
+    Hydi, Ho;
+
+    public static GitHubIssue511 from(String utterance) {
+        return valueOf(utterance);
+    }
+}
