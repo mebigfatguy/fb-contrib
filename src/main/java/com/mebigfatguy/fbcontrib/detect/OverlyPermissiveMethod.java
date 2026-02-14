@@ -19,8 +19,10 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -64,12 +66,16 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
     private static Map<Integer, String> DECLARED_ACCESS = new HashMap<>();
+    private static Set<String> ENUM_METHODS = new HashSet<>();
 
     static {
         DECLARED_ACCESS.put(Integer.valueOf(Const.ACC_PRIVATE), "private");
         DECLARED_ACCESS.put(Integer.valueOf(Const.ACC_PROTECTED), "protected");
         DECLARED_ACCESS.put(Integer.valueOf(Const.ACC_PUBLIC), "public");
         DECLARED_ACCESS.put(Integer.valueOf(0), "package private");
+
+        ENUM_METHODS.add("values");
+        ENUM_METHODS.add("valueOf");
     }
 
     private BugReporter bugReporter;
@@ -282,6 +288,9 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             if ((declaredAccess & Const.ACC_PRIVATE) != 0) {
                 continue;
             }
+            if ((declaredAccess & Const.ACC_SYNTHETIC) != 0) {
+                continue;
+            }
 
             if (mi.wasCalledPublicly() || !mi.wasCalled()) {
                 continue;
@@ -332,6 +341,12 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             JavaClass fqCls = Repository.lookupClass(fqMethod.getClassName());
             if (fqCls.isInterface()) {
                 return true;
+            }
+
+            if (fqCls.isEnum()) {
+                if (ENUM_METHODS.contains(fqMethod.getMethodName())) {
+                    return true;
+                }
             }
 
             for (JavaClass inf : fqCls.getAllInterfaces()) {
