@@ -13,27 +13,20 @@
 	<classpathentry kind="lib" path="lib/backport-util-concurrent-3.1.jar" sourcepath="/home/dave/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/threetenbp-1.3.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar" sourcepath="lib/sources/commons-collections-3.2.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jena-shaded-guava-3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.48.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest-core-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-api-2.9.1.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest-library-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/jsr305-3.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/akka-actor_2.12-2.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/akka-http_2.12-10.1.11.jar"/>
 	<classpathentry kind="lib" path="lib/akka-http-core_2.12-10.1.11.jar"/>
-	<classpathentry kind="lib" path="lib/asm-9.6.jar"/>
-	<classpathentry kind="lib" path="lib/asm-tree-9.6.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.13.2.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta.xml.bind-api-2.3.3.jar"/>
 	<classpathentry kind="lib" path="lib/akka-stream_2.12-2.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/scala-library-2.12.10.jar"/>
 	<classpathentry kind="lib" path="lib/bcel-6.11.0.jar" sourcepath="lib/sources/bcel-6.11.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-core-5.15.2.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-2.0.16.jar"/>
-	<classpathentry kind="lib" path="lib/byte-buddy-1.15.11.jar"/>
-	<classpathentry kind="lib" path="lib/byte-buddy-agent-1.15.11.jar"/>
 	<classpathentry kind="lib" path="lib/testng-7.11.0.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.6.jar"/>
@@ -45,19 +38,26 @@
 	<classpathentry kind="lib" path="lib/httpclient-4.5.14.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.5.14.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.4.16.jar"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.18.0.jar"/>
-	<classpathentry kind="lib" path="lib/aspectjrt-1.9.23.jar"/>
-	<classpathentry kind="lib" path="lib/aspectjtools-1.9.23.jar"/>
-	<classpathentry kind="lib" path="lib/aspectjweaver-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/spring-beans-6.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/spring-context-6.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/spring-tx-6.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.19.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang3-3.18.0.jar"/>
-	<classpathentry kind="lib" path="lib/spotbugs-4.9.8.jar" sourcepath="lib/sources/spotbugs-4.9.8-sources.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-ant-4.9.8.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-annotations-4.9.8.jar"/>
 	<classpathentry kind="lib" path="lib/guava-33.5.0-jre.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-simple-2.0.16.jar"/>
+	<classpathentry kind="lib" path="lib/asm-9.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/asm-tree-9.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjrt-1.9.25.1.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjtools-1.9.25.1.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjweaver-1.9.25.1.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-1.18.4.jar"/>
+	<classpathentry kind="lib" path="lib/byte-buddy-agent-1.18.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.21.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.20.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-2.0.17.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple-2.0.17.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-4.9.8.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-api-2.25.3.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
