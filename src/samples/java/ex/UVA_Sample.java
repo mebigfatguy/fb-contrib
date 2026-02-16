@@ -74,3 +74,16 @@ public class UVA_Sample<T> extends ArrayList<T> {
 
     }
 }
+
+interface Converter<T> {
+    T convert(T[] t);
+}
+
+class StringConverterFP513 implements Converter<String> {
+
+    @Override
+    public String convert(String[] t) {
+        return null;
+    }
+
+}
