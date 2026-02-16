@@ -101,7 +101,7 @@ public class UseVarArgs extends BytecodeScanningDetector {
 
             boolean isVarMethod = (obj.getAccessFlags() & Const.ACC_VARARGS) != 0;
 
-            boolean isConvertable = !isVarMethod && methodHasConvertableLastParam(obj);
+            boolean isConvertable = !isVarMethod && methodHasConvertableLastParam(obj) && !methodHasBridgePartner(obj);
 
             super.visitMethod(obj);
 
@@ -234,6 +234,21 @@ public class UseVarArgs extends BytecodeScanningDetector {
         }
 
         return true;
+    }
+
+    private boolean methodHasBridgePartner(Method method) {
+        for (Method m : javaClass.getMethods()) {
+            if (m.equals(method) || m.isStatic()) {
+                continue;
+            }
+
+            if (m.isSynthetic() && m.getName().equals(method.getName()) && ((m.getAccessFlags() & Const.ACC_BRIDGE) != 0)) {
+                return true;
+            }
+
+        }
+
+        return false;
     }
 
     /**
