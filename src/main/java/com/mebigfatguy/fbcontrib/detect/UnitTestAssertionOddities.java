@@ -178,8 +178,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                     JavaClass innerCls = Repository.lookupClass(innerName);
                     for (AnnotationEntry ae : innerCls.getAnnotationEntries()) {
                         if ("Lorg/junit/jupiter/api/Nested;".equals(ae.getAnnotationType())) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_NESTED_STATIC_CLASS.name(), NORMAL_PRIORITY).addClass(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_NESTED_STATIC_CLASS.name(), NORMAL_PRIORITY)
+                                    .addClass(innerCls));
                             break;
                         }
                     }
