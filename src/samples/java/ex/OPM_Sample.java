@@ -145,3 +145,15 @@ enum GitHubIssue511 {
         return valueOf(utterance);
     }
 }
+
+class GitHubIssue512Base {
+    public int publicNotNeeded() {
+        return 0;
+    }
+}
+
+class GitHubIssue512 extends GitHubIssue512Base {
+    public void foo() {
+        publicNotNeeded();
+    }
+}

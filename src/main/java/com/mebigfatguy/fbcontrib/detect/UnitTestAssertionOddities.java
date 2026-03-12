@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.InnerClass;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -107,6 +108,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private TestFrameworkType frameworkType;
     private boolean hasAnnotation;
     private Set<FieldDescriptor> fieldsWithAnnotations;
+    private JavaClass cls;
 
     /**
      * constructs a JOA detector given the reporter to report bugs on
@@ -146,7 +148,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            JavaClass cls = classContext.getJavaClass();
+            cls = classContext.getJavaClass();
             className = cls.getClassName().replace('.', '/');
             isTestCaseDerived = (testCaseClass != null) && cls.instanceOf(testCaseClass);
             isAnnotationCapable = (cls.getMajor() >= 5) && ((testAnnotationClass != null) || (test5AnnotationClass != null) || (testNGAnnotationClass != null));
@@ -160,6 +162,19 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         } finally {
             stack = null;
             fieldsWithAnnotations = null;
+        }
+    }
+
+    @Override
+    public void visitInnerClass(InnerClass obj) {
+        if ((obj.getInnerAccessFlags() & Const.ACC_STATIC) != 0) {
+            for (AnnotationEntry ae : cls.getAnnotationEntries()) {
+                if ("Lorg/junit/jupiter/api/Nested;".equals(ae.getAnnotationType())) {
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_NESTED_STATIC_CLASS.name(), NORMAL_PRIORITY).addClass(this));
+                    break;
+                }
+            }
         }
     }
 

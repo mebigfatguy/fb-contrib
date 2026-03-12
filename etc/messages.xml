@@ -4011,6 +4011,18 @@ return new String[0];<br/>
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_NESTED_STATIC_CLASS">
+        <ShortDescription>JUnit 5 class annotated by @Nested can not be static</ShortDescription>
+        <LongDescription>JUnit 5 classes {0} annotated by @Nested can not be static</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This Junit 5 @Nested class is defined as static. This class will only be discovered if a standalone test. You should 
+            remove the static attribute</p>
+            ]]>
+        </Details>
+    </BugPattern>    
+    
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
 		<ShortDescription>TestNG test method passes constant to first (actual) assertion parameter</ShortDescription>
