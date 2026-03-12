@@ -29,6 +29,8 @@ import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.InnerClass;
@@ -167,14 +169,24 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
 
     @Override
     public void visitInnerClass(InnerClass obj) {
-        if ((obj.getInnerAccessFlags() & Const.ACC_STATIC) != 0) {
-            for (AnnotationEntry ae : cls.getAnnotationEntries()) {
-                if ("Lorg/junit/jupiter/api/Nested;".equals(ae.getAnnotationType())) {
-                    bugReporter
-                            .reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_NESTED_STATIC_CLASS.name(), NORMAL_PRIORITY).addClass(this));
-                    break;
+        try {
+            if ((obj.getInnerAccessFlags() & Const.ACC_STATIC) != 0) {
+                Constant innerCon = cls.getConstantPool().getConstant(obj.getInnerClassIndex());
+                if (innerCon instanceof ConstantClass) {
+                    ConstantClass cc = (ConstantClass) innerCon;
+                    String innerName = SignatureUtils.stripSignature(cc.getBytes(cls.getConstantPool()));
+                    JavaClass innerCls = Repository.lookupClass(innerName);
+                    for (AnnotationEntry ae : innerCls.getAnnotationEntries()) {
+                        if ("Lorg/junit/jupiter/api/Nested;".equals(ae.getAnnotationType())) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_NESTED_STATIC_CLASS.name(), NORMAL_PRIORITY).addClass(this));
+                            break;
+                        }
+                    }
                 }
             }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
         }
     }
 
