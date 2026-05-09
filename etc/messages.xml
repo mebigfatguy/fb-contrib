@@ -6003,6 +6003,19 @@ for (Person p : people) {
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="JPAI_NON_OPTIMAL_QUERY">
+    	<ShortDescription>Method post filters a query with java streams</ShortDescription>
+    	<LongDescription>Method post filters a query with java streams</LongDescription>
+		<Details>
+    		<![CDATA[
+    		<p>This method passes a List returned from a Query.getResultList directly to a
+    		java.util.stream.Stream that further filters the result set. Since the original List
+    		is never used otherwise, there's no reason not to modify the original query to
+    		reduce the original result set to match what was filtered, as it will be more performant.
+    		]]>
+		</Details>
+    </BugPattern>
 
     <BugPattern type="SEO_SUBOPTIMAL_EXPRESSION_ORDER">
     	<ShortDescription>Method orders expressions in a conditional in a sub optimal way</ShortDescription>

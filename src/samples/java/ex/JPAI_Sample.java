@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.TypedQuery;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +72,27 @@ public class JPAI_Sample {
 	@Transactional
 	public void customEx(MyEntity e) throws FP441Exception {
 		// FP441Exception is a runtime exception
+	}
+
+	public void streamResultSet(EntityManager em) {
+		TypedQuery<MyEntity> q = em.createNamedQuery("FOO", MyEntity.class);
+		List<MyEntity> es = q.getResultList().stream().filter((e) -> e.getId().equals(1)).collect(Collectors.toList());
+	}
+
+	public List<MyEntity> streamResultSetSplit(EntityManager em) {
+		TypedQuery<MyEntity> q = em.createNamedQuery("FOO", MyEntity.class);
+		List<MyEntity> es = q.getResultList();
+		return es.stream().filter((e) -> e.getId().equals(1)).collect(Collectors.toList());
+	}
+
+	public List<MyEntity> fpStreamResultSet(EntityManager em) {
+		TypedQuery<MyEntity> q = em.createNamedQuery("FOO", MyEntity.class);
+
+		List<MyEntity> es = q.getResultList();
+
+		List<MyEntity> filter = es.stream().filter((e) -> e.getId().equals(1)).collect(Collectors.toList());
+
+		return es;
 	}
 
 	@Entity

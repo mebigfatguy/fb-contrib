@@ -31,7 +31,7 @@
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.6.jar"/>
 	<classpathentry kind="lib" path="lib/jersey-media-multipart-3.1.10.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta.persistence-api-2.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta.persistence-api-2.2.3.jar" sourcepath="lib/sources/jakarta.persistence-api-2.2.3-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta.servlet.jsp-api-2.3.6.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta.servlet-api-4.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta.ws.rs-api-2.1.6.jar"/>

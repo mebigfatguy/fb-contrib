@@ -22,7 +22,7 @@ package com.mebigfatguy.fbcontrib.utils;
  * an enumeration of all the bug instance types that fb-contrib produces
  */
 public enum BugType {
-    // @formatter:off
+	// @formatter:off
     ABC_ARRAY_BASED_COLLECTIONS,
     ACEM_ABSTRACT_CLASS_EMPTY_METHODS,
     AFBR_ABNORMAL_FINALLY_BLOCK_RETURN,
@@ -138,6 +138,7 @@ public enum BugType {
     JPAI_HC_EQUALS_ON_MANAGED_ENTITY,
     JPAI_IGNORED_MERGE_RESULT,
     JPAI_INEFFICIENT_EAGER_FETCH,
+    JPAI_NON_OPTIMAL_QUERY,
     JPAI_NON_PROXIED_TRANSACTION_CALL,
     JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING,
     JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD,
