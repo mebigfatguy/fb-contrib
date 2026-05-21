@@ -44,138 +44,136 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ListUsageIssues extends BytecodeScanningDetector {
 
-    private static final FQMethod ARRAYS_ASLIST_METHOD = new FQMethod("java/util/Arrays", "asList",
-            new SignatureBuilder().withParamTypes(Object[].class).withReturnType(List.class).build());
-    private static final FQMethod COLLECTIONS_SINGLETONLIST_METHOD = new FQMethod("java/util/Collections",
-            "singletonList", new SignatureBuilder().withParamTypes(Object.class).withReturnType(List.class).build());
-    private static final FQMethod LIST_STREAM_METHOD = new FQMethod("java/util/List", "stream",
-            new SignatureBuilder().withReturnType("java/util/stream/Stream").build());
-    private static final FQMethod STREAM_FINDFIRST_METHOD = new FQMethod("java/util/stream/Stream", "findFirst",
-            new SignatureBuilder().withReturnType("java/util/Optional").build());
-    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get",
-            SignatureBuilder.SIG_VOID_TO_OBJECT);
+	private static final FQMethod ARRAYS_ASLIST_METHOD = new FQMethod("java/util/Arrays", "asList",
+			new SignatureBuilder().withParamTypes(Object[].class).withReturnType(List.class).build());
+	private static final FQMethod COLLECTIONS_SINGLETONLIST_METHOD = new FQMethod("java/util/Collections",
+			"singletonList", new SignatureBuilder().withParamTypes(Object.class).withReturnType(List.class).build());
+	private static final FQMethod LIST_STREAM_METHOD = new FQMethod("java/util/List", "stream",
+			new SignatureBuilder().withReturnType("java/util/stream/Stream").build());
+	private static final FQMethod STREAM_FINDFIRST_METHOD = new FQMethod("java/util/stream/Stream", "findFirst",
+			new SignatureBuilder().withReturnType("java/util/Optional").build());
+	private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get",
+			SignatureBuilder.SIG_VOID_TO_OBJECT);
 
-    private static final Set<FQMethod> ADDALL_METHODS = UnmodifiableSet.create(
-            new FQMethod("java/util/Collection", "addAll",
-                    new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
-            new FQMethod("java/util/List", "addAll",
-                    new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
-            new FQMethod("java/util/Set", "addAll",
-                    new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()));
+	private static final Set<FQMethod> ADDALL_METHODS = UnmodifiableSet.create(
+			new FQMethod("java/util/Collection", "addAll",
+					new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
+			new FQMethod("java/util/List", "addAll",
+					new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
+			new FQMethod("java/util/Set", "addAll",
+					new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()));
 
-    private static final Set<FQMethod> EMPTY_COLLECTIONS = UnmodifiableSet.create(
-    		new FQMethod("java/util/Collections", "emptyList", "()Ljava/util/List;"),
-    		new FQMethod("java/util/Collections", "emptySet", "()Ljava/util/Set;"),
-    		new FQMethod("java/util/List", "of", "()Ljava/util/List;"),
-    		new FQMethod("java/util/Set", "of", "()Ljava/util/Set;")
-    );
-    		
-    
-    enum LUIUserValue {
-        ONE_ITEM_LIST, LIST_STREAM, STREAM_OPTIONAL, EMPTY_COLLECTION
-    };
+	private static final Set<FQMethod> EMPTY_COLLECTIONS = UnmodifiableSet.create(
+			new FQMethod("java/util/Collections", "emptyList", "()Ljava/util/List;"),
+			new FQMethod("java/util/Collections", "emptySet", "()Ljava/util/Set;"),
+			new FQMethod("java/util/List", "of", "()Ljava/util/List;"),
+			new FQMethod("java/util/Set", "of", "()Ljava/util/Set;"));
 
-    private BugReporter bugReporter;
-    private OpcodeStack stack;
-    private int clsVersion;
+	enum LUIUserValue {
+		ONE_ITEM_LIST, LIST_STREAM, STREAM_OPTIONAL, EMPTY_COLLECTION
+	};
 
-    /**
-     * constructs a LUI detector given the reporter to report bugs on with
-     *
-     * @param bugReporter the sync of bug reports
-     */
-    public ListUsageIssues(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
-    }
+	private BugReporter bugReporter;
+	private OpcodeStack stack;
+	private int clsVersion;
 
-    @Override
-    public void visitClassContext(ClassContext classContext) {
-        try {
-            stack = new OpcodeStack();
-            clsVersion = classContext.getJavaClass().getMajor();
-            super.visitClassContext(classContext);
-        } finally {
-            stack = null;
-        }
-    }
+	/**
+	 * constructs a LUI detector given the reporter to report bugs on with
+	 *
+	 * @param bugReporter the sync of bug reports
+	 */
+	public ListUsageIssues(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+	}
 
-    @Override
-    public void visitCode(Code obj) {
-        stack.resetForMethodEntry(this);
-        super.visitCode(obj);
-    }
+	@Override
+	public void visitClassContext(ClassContext classContext) {
+		try {
+			stack = new OpcodeStack();
+			clsVersion = classContext.getJavaClass().getMajor();
+			super.visitClassContext(classContext);
+		} finally {
+			stack = null;
+		}
+	}
 
-    @Override
-    public void sawOpcode(int seen) {
-        LUIUserValue userValue = null;
-        try {
-            if (seen == Const.INVOKESTATIC) {
-                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
-                        getSigConstantOperand());
-                if (ARRAYS_ASLIST_METHOD.equals(fqm)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (Values.ONE.equals(itm.getConstant())) {
-                            if (clsVersion >= Const.MAJOR_1_8) {
-                                bugReporter.reportBug(
-                                        new BugInstance(this, BugType.LUI_USE_SINGLETON_LIST.name(), NORMAL_PRIORITY)
-                                                .addClass(this).addMethod(this).addSourceLine(this));
-                            }
+	@Override
+	public void visitCode(Code obj) {
+		stack.resetForMethodEntry(this);
+		super.visitCode(obj);
+	}
 
-                            userValue = LUIUserValue.ONE_ITEM_LIST;
-                        }
-                    }
-                } else if (COLLECTIONS_SINGLETONLIST_METHOD.equals(fqm)) {
-                    userValue = LUIUserValue.ONE_ITEM_LIST;
-                } else if (EMPTY_COLLECTIONS.contains(fqm)) {
-                	userValue = LUIUserValue.EMPTY_COLLECTION;
-                }
-            } else if (seen == Const.INVOKEINTERFACE) {
-                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
-                        getSigConstantOperand());
-                if (ADDALL_METHODS.contains(fqm)) {
-                    if (stack.getStackDepth() >= 2) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        if ((itm.getUserValue() == LUIUserValue.ONE_ITEM_LIST) && (itm.getRegisterNumber() < 0)
-                                && (itm.getXField() == null)) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.LUI_USE_COLLECTION_ADD.name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(this).addSourceLine(this));
-                        } else if (itm.getUserValue() == LUIUserValue.EMPTY_COLLECTION) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.LUI_VACUOUS_ADDALL.name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(this).addSourceLine(this));
-                        }
-                    }
-                } else if (LIST_STREAM_METHOD.equals(fqm)) {
-                    userValue = LUIUserValue.LIST_STREAM;
-                } else if (STREAM_FINDFIRST_METHOD.equals(fqm)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (itm.getUserValue() == LUIUserValue.LIST_STREAM) {
-                            userValue = LUIUserValue.STREAM_OPTIONAL;
-                        }
-                    }
-                }
-            } else if (seen == Const.INVOKEVIRTUAL) {
-                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
-                        getSigConstantOperand());
-                if (OPTIONAL_GET_METHOD.equals(fqm)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (itm.getUserValue() == LUIUserValue.STREAM_OPTIONAL) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_GET0.name(), NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this));
-                        }
-                    }
-                }
-            }
-        } finally {
-            stack.sawOpcode(this, seen);
-            if ((userValue != null) && (stack.getStackDepth() > 0)) {
-                OpcodeStack.Item itm = stack.getStackItem(0);
-                itm.setUserValue(userValue);
-            }
-        }
-    }
+	@Override
+	public void sawOpcode(int seen) {
+		LUIUserValue userValue = null;
+		try {
+			if (seen == Const.INVOKESTATIC) {
+				FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+						getSigConstantOperand());
+				if (ARRAYS_ASLIST_METHOD.equals(fqm)) {
+					if (stack.getStackDepth() > 0) {
+						OpcodeStack.Item itm = stack.getStackItem(0);
+						if (Values.ONE.equals(itm.getConstant())) {
+							if (clsVersion >= Const.MAJOR_1_8) {
+								bugReporter.reportBug(
+										new BugInstance(this, BugType.LUI_USE_SINGLETON_LIST.name(), NORMAL_PRIORITY)
+												.addClass(this).addMethod(this).addSourceLine(this));
+							}
+
+							userValue = LUIUserValue.ONE_ITEM_LIST;
+						}
+					}
+				} else if (COLLECTIONS_SINGLETONLIST_METHOD.equals(fqm)) {
+					userValue = LUIUserValue.ONE_ITEM_LIST;
+				} else if (EMPTY_COLLECTIONS.contains(fqm)) {
+					userValue = LUIUserValue.EMPTY_COLLECTION;
+				}
+			} else if (seen == Const.INVOKEINTERFACE) {
+				FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+						getSigConstantOperand());
+				if (ADDALL_METHODS.contains(fqm)) {
+					if (stack.getStackDepth() >= 2) {
+						OpcodeStack.Item itm = stack.getStackItem(0);
+						if ((itm.getUserValue() == LUIUserValue.ONE_ITEM_LIST) && (itm.getRegisterNumber() < 0)
+								&& (itm.getXField() == null)) {
+							bugReporter.reportBug(
+									new BugInstance(this, BugType.LUI_USE_COLLECTION_ADD.name(), NORMAL_PRIORITY)
+											.addClass(this).addMethod(this).addSourceLine(this));
+						} else if (itm.getUserValue() == LUIUserValue.EMPTY_COLLECTION) {
+							bugReporter
+									.reportBug(new BugInstance(this, BugType.LUI_VACUOUS_ADDALL.name(), NORMAL_PRIORITY)
+											.addClass(this).addMethod(this).addSourceLine(this));
+						}
+					}
+				} else if (LIST_STREAM_METHOD.equals(fqm)) {
+					userValue = LUIUserValue.LIST_STREAM;
+				} else if (STREAM_FINDFIRST_METHOD.equals(fqm)) {
+					if (stack.getStackDepth() > 0) {
+						OpcodeStack.Item itm = stack.getStackItem(0);
+						if (itm.getUserValue() == LUIUserValue.LIST_STREAM) {
+							userValue = LUIUserValue.STREAM_OPTIONAL;
+						}
+					}
+				}
+			} else if (seen == Const.INVOKEVIRTUAL) {
+				FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+						getSigConstantOperand());
+				if (OPTIONAL_GET_METHOD.equals(fqm)) {
+					if (stack.getStackDepth() > 0) {
+						OpcodeStack.Item itm = stack.getStackItem(0);
+						if (itm.getUserValue() == LUIUserValue.STREAM_OPTIONAL) {
+							bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_GET0.name(), NORMAL_PRIORITY)
+									.addClass(this).addMethod(this).addSourceLine(this));
+						}
+					}
+				}
+			}
+		} finally {
+			stack.sawOpcode(this, seen);
+			if ((userValue != null) && (stack.getStackDepth() > 0)) {
+				OpcodeStack.Item itm = stack.getStackItem(0);
+				itm.setUserValue(userValue);
+			}
+		}
+	}
 }
