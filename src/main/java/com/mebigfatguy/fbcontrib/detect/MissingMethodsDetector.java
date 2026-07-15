@@ -342,6 +342,13 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             if ((item.getRegisterNumber() == 0) || ((sig != null) && sig.equals(clsSignature))) {
                 return sawGetStatic(userObject);
             }
+
+            if (isInnerClass) {
+                XField field = getXFieldOperand();
+                if ((field != null) && outerClassName.equals(field.getClassName())) {
+                    return new FQField(field.getClassName(), field.getName(), field.getSignature());
+                }
+            }
         }
         return userObject;
     }
@@ -364,7 +371,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             if (uo != null) {
                 String name = getNameConstantOperand();
                 if (isMethodThatShouldBeCalled(name)) {
-                    clearUserValue(item);
+                    clearTrackingOnly(item);
                 } else if (!Values.CLONE.equals(name)) {
                     if ((!Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(sig))) && !nextOpIsPop()) {
                         clearUserValue(item);
@@ -432,6 +439,9 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             }
         } else if (uo instanceof String) {
             fieldSpecialObjects.remove(uo);
+        } else if (uo instanceof FQField) {
+            FQField fqf = (FQField) uo;
+            saveSpecialFieldUse(fqf.getClassName(), fqf.getFieldName(), fqf.getSignature());
         } else if (uo instanceof Boolean) {
             LocalUse lu = localSpecialObjects.get(Integer.valueOf(item.getRegisterNumber()));
             if (lu != null) {
@@ -439,6 +449,23 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             }
         }
         item.setUserValue(null);
+    }
+
+    /**
+     * stops tracking the item without treating an {@link FQField} as disqualified.
+     * Used when the method that was called on the item is the expected/required
+     * call (isMethodThatShouldBeCalled returned true), so there is nothing to
+     * report for the outer class -- the field was properly used.
+     *
+     * @param item the stack item whose tracking should be cleared
+     */
+    private void clearTrackingOnly(OpcodeStack.Item item) {
+        Object uo = item.getUserValue();
+        if (uo instanceof FQField) {
+            item.setUserValue(null);
+        } else {
+            clearUserValue(item);
+        }
     }
 
     protected OpcodeStack getStack() {

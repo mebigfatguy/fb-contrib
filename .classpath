@@ -56,7 +56,7 @@
 	<classpathentry kind="lib" path="lib/slf4j-api-2.0.17.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-simple-2.0.17.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-api-2.25.3.jar"/>
-	<classpathentry kind="lib" path="lib/spotbugs-4.10.2.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-4.10.2.jar" sourcepath="lib/sources/spotbugs-4.10.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-annotations-4.10.2.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-ant-4.10.2.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
