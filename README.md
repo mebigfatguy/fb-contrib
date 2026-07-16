@@ -111,7 +111,7 @@ The group ID for sb-contrib is com.mebigfatguy.sb-contrib, and the artifact ID i
 <plugin>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-maven-plugin</artifactId>
-    <version>4.10.2.0</version>
+    <version>4.10.4.0</version>
     <configuration>
         <plugins>
             <plugin>
