@@ -371,9 +371,11 @@ public class JPAIssues extends BytecodeScanningDetector {
 					resultSetBugs.remove(itm.getRegisterNumber());
 
 					for (int i = 0; i < numParms; i++) {
-						OpcodeStack.Item pItm = stack.getStackItem(numParms);
+						OpcodeStack.Item pItm = stack.getStackItem(i);
 						JPAUserValue uv = (JPAUserValue) pItm.getUserValue();
-						resultSetBugs.remove(uv.register);
+						if (uv != null) {
+						    resultSetBugs.remove(uv.register);
+						}
 					}
 				}
 			}
