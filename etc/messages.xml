@@ -6526,16 +6526,16 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 
     <BugPattern type="LUI_USE_SINGLETON_LIST">
     	<ShortDescription>Method builds a list from one element using Arrays.asList</ShortDescription>
-    	<LongDescription>Method {1} builds a list from one element using Arrays.asList rather than Collections.singletonList</LongDescription>
+    	<LongDescription>Method {1} builds a list from one element using Arrays.asList rather than Collections.singletonList/List.of</LongDescription>
     	<Details>
     	<![CDATA[
     	<p>This method builds a list using Arrays.asList(foo), passing in a single element. Arrays.asList needs to first create an array from this one
-    	element, and then build a List that wraps this array. It is simpler to use Collections.singletonList(foo), which does not create the array, and
+    	element, and then build a List that wraps this array. It is simpler to use Collections.singletonList(foo) [or Lost.of if on java 9+], which does not create the array, and
     	produces a far simpler instance of List. Since both of these arrays are immutable (from the List's point of view) they are equivalent from a usage
     	standpoint.
     	</p>
-    	<p>There is one difference between Array.asList and Collections.singletonList that you should be mindful of. The rarely used set(index, value) method is
-    	allowed to be used with a List created by Array.asList, but not with Collections.singletonList. So if you do use the set(index, value) method
+    	<p>There is one difference between Array.asList and Collections.singletonList/List.of that you should be mindful of. The rarely used set(index, value) method is
+    	allowed to be used with a List created by Array.asList, but not with Collections.singletonList/List.of. So if you do use the set(index, value) method
     	continue using Arrays.asList.
     	]]>
     	</Details>
