@@ -3874,6 +3874,30 @@ return new String[0];<br/>
 		</Details>
 	</BugPattern>
 
+	<BugPattern type="CFS_ODD_NONBOOLEAN_IS">
+		<ShortDescription>Method looks like a boolean getter, but doesn't return a boolean</ShortDescription>
+		<LongDescription>Method {1} looks like a boolean getter, but doesn't return a boolean</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method is named as a boolean getter isXXX(), and the expectation that people will have, is that</p>
+			it returns a boolean value. However, the return type is void. It would be less confusing if 'is'
+			was not the method prefix.</p>
+			]]>
+		</Details>
+	</BugPattern>
+
+	<BugPattern type="CFS_ODD_GETTER">
+		<ShortDescription>Method looks like a getter but has void return</ShortDescription>
+		<LongDescription>Method {1} looks like a getter but has void return</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method is named as a getter, and the expectation that people will have, is that</p>
+			it returns a value. However, the return type is void. It would be less confusing if 'get'
+			was not the method prefix.</p>
+			]]>
+		</Details>
+	</BugPattern>
+
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
 		<ShortDescription>JUnit test method passes constant to second (actual) assertion parameter</ShortDescription>
 		<LongDescription>JUnit test method {1} passes constant to second (actual) assertion parameter</LongDescription>

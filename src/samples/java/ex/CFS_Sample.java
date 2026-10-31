@@ -3,45 +3,52 @@ package ex;
 import java.util.Date;
 
 public class CFS_Sample {
-    @SuppressWarnings("deprecation")
-    public Date getNextDate(Date d) {
-        d.setHours(0);
-        return d;
-    }
+	@SuppressWarnings("deprecation")
+	public Date getNextDate(Date d) {
+		d.setHours(0);
+		return d;
+	}
 
-    @SuppressWarnings("deprecation")
-    public Date getNextDateFP(Date d) {
-        d = (Date) d.clone();
-        d.setHours(0);
-        return d;
-    }
+	@SuppressWarnings("deprecation")
+	public Date getNextDateFP(Date d) {
+		d = (Date) d.clone();
+		d.setHours(0);
+		return d;
+	}
 
-    public View fpCreateScrollView(View container, View content) {
+	public void getBaddy() {
+	}
 
-        if (!content.shouldAdd()) {
-            return container;
-        }
+	public String isBaddy() {
+		return "yes";
+	}
 
-        View scroller = View.createScroller(container.getChild(), content);
-        container.addView(scroller);
-        return scroller;
-    }
+	public View fpCreateScrollView(View container, View content) {
 
-    static class View {
+		if (!content.shouldAdd()) {
+			return container;
+		}
 
-        public static View createScroller(Object child, View content) {
-            return null;
-        }
+		View scroller = View.createScroller(container.getChild(), content);
+		container.addView(scroller);
+		return scroller;
+	}
 
-        public void addView(View scroller) {
-        }
+	static class View {
 
-        public boolean shouldAdd() {
-            return false;
-        }
+		public static View createScroller(Object child, View content) {
+			return null;
+		}
 
-        public Object getChild() {
-            return null;
-        }
-    }
+		public void addView(View scroller) {
+		}
+
+		public boolean shouldAdd() {
+			return false;
+		}
+
+		public Object getChild() {
+			return null;
+		}
+	}
 }

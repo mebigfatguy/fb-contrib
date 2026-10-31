@@ -53,187 +53,208 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * to have the method be a void method, to avoid confusion.
  */
 public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
-    private static final Set<String> knownImmutables;
+	private static final Set<String> knownImmutables;
 
-    static {
-        Set<String> ki = new HashSet<>();
-        ki.add(Values.SIG_JAVA_LANG_STRING);
-        ki.add("Ljava/lang/Byte;");
-        ki.add("Ljava/lang/Character;");
-        ki.add("Ljava/lang/Short;");
-        ki.add("Ljava/lang/Integer;");
-        ki.add("Ljava/lang/Long;");
-        ki.add("Ljava/lang/Float;");
-        ki.add("Ljava/lang/Double;");
-        ki.add("Ljava/lang/Boolean;");
-        ki.add("Ljava/lang/Class;");
-        knownImmutables = Collections.unmodifiableSet(ki);
-    }
+	static {
+		Set<String> ki = new HashSet<>();
+		ki.add(Values.SIG_JAVA_LANG_STRING);
+		ki.add("Ljava/lang/Byte;");
+		ki.add("Ljava/lang/Character;");
+		ki.add("Ljava/lang/Short;");
+		ki.add("Ljava/lang/Integer;");
+		ki.add("Ljava/lang/Long;");
+		ki.add("Ljava/lang/Float;");
+		ki.add("Ljava/lang/Double;");
+		ki.add("Ljava/lang/Boolean;");
+		ki.add("Ljava/lang/Class;");
+		knownImmutables = Collections.unmodifiableSet(ki);
+	}
 
-    private final BugReporter bugReporter;
-    private Map<Integer, ParmUsage> possibleParmRegs;
-    private OpcodeStack stack;
+	private final BugReporter bugReporter;
+	private Map<Integer, ParmUsage> possibleParmRegs;
+	private OpcodeStack stack;
 
-    /**
-     * constructs a CFS detector given the reporter to report bugs on
-     *
-     * @param bugReporter the sync of bug reports
-     */
-    public ConfusingFunctionSemantics(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
-    }
+	/**
+	 * constructs a CFS detector given the reporter to report bugs on
+	 *
+	 * @param bugReporter the sync of bug reports
+	 */
+	public ConfusingFunctionSemantics(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+	}
 
-    /**
-     * implements the visitor to initialize/destroy the possible parameter registers
-     * and opcode stack
-     *
-     * @param classContext the context object of the currently parsed class
-     */
-    @Override
-    public void visitClassContext(ClassContext classContext) {
-        try {
-            stack = new OpcodeStack();
-            possibleParmRegs = new HashMap<>(10);
-            super.visitClassContext(classContext);
-        } finally {
-            stack = null;
-            possibleParmRegs = null;
-        }
-    }
+	/**
+	 * implements the visitor to initialize/destroy the possible parameter registers
+	 * and opcode stack
+	 *
+	 * @param classContext the context object of the currently parsed class
+	 */
+	@Override
+	public void visitClassContext(ClassContext classContext) {
+		try {
+			stack = new OpcodeStack();
+			possibleParmRegs = new HashMap<>(10);
+			super.visitClassContext(classContext);
+		} finally {
+			stack = null;
+			possibleParmRegs = null;
+		}
+	}
 
-    /**
-     * implements the visitor to look for any non-immutable typed parameters are
-     * assignable to the return type. If found, the method is parsed.
-     *
-     * @param obj the context object of the currently parsed code block
-     */
-    @Override
-    public void visitCode(Code obj) {
-        try {
-            possibleParmRegs.clear();
-            Method m = getMethod();
-            String methodSignature = m.getSignature();
-            String retSignature = SignatureUtils.getReturnSignature(methodSignature);
-            JavaClass returnClass = null;
-            int[] parmRegs = null;
+	@Override
+	public void visitMethod(Method obj) {
 
-            if (retSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && !knownImmutables.contains(retSignature)) {
-                List<String> parmTypes = SignatureUtils.getParameterSignatures(methodSignature);
-                for (int p = 0; p < parmTypes.size(); p++) {
-                    String parmSignature = parmTypes.get(p);
-                    if (parmSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)
-                            && !knownImmutables.contains(parmSignature)) {
-                        if (returnClass == null) {
-                            returnClass = Repository.lookupClass(SignatureUtils.trimSignature(retSignature));
-                            parmRegs = RegisterUtils.getParameterRegisters(m);
-                        }
+		String returnType = SignatureUtils.getReturnSignature(obj.getSignature());
+		if ("V".equals(returnType)) {
+			String name = obj.getName();
+			if (name.length() >= 4 && name.startsWith("get") && Character.isUpperCase(name.charAt(3))) {
+				bugReporter.reportBug(new BugInstance(this, BugType.CFS_ODD_GETTER.name(), NORMAL_PRIORITY)
+						.addClass(this).addMethod(this).addSourceLine(this));
+			}
+		}
 
-                        if (parmRegs != null) {
-                            JavaClass parmClass = Repository.lookupClass(SignatureUtils.stripSignature(parmSignature));
-                            if (parmClass.instanceOf(returnClass)) {
-                                possibleParmRegs.put(Integer.valueOf(parmRegs[p]), new ParmUsage());
-                            }
-                        }
-                    }
-                }
+		if ("V".equals(returnType) || (!"Z".equals(returnType) && !"Ljava/lang/Boolean;".equals(returnType))) {
+			String name = obj.getName();
+			if (name.length() >= 3 && name.startsWith("is") && Character.isUpperCase(name.charAt(2))) {
+				bugReporter.reportBug(new BugInstance(this, BugType.CFS_ODD_NONBOOLEAN_IS.name(), NORMAL_PRIORITY)
+						.addClass(this).addMethod(this).addSourceLine(this));
+			}
+		}
+	}
 
-                if (!possibleParmRegs.isEmpty()) {
-                    try {
-                        stack.resetForMethodEntry(this);
-                        super.visitCode(obj);
-                        for (ParmUsage pu : possibleParmRegs.values()) {
-                            if ((pu.returnPC >= 0) && (pu.alteredPC >= 0) && (pu.returnPC > pu.alteredPC)) {
-                                bugReporter.reportBug(new BugInstance(this,
-                                        BugType.CFS_CONFUSING_FUNCTION_SEMANTICS.name(), NORMAL_PRIORITY).addClass(this)
-                                                .addMethod(this).addSourceLine(this, pu.returnPC)
-                                                .addSourceLine(this, pu.alteredPC));
-                            }
-                        }
-                    } catch (StopOpcodeParsingException e) {
-                        // no parm regs left
-                    }
-                }
-            }
-        } catch (ClassNotFoundException cnfe) {
-            bugReporter.reportMissingClass(cnfe);
-        }
-    }
+	/**
+	 * implements the visitor to look for any non-immutable typed parameters are
+	 * assignable to the return type. If found, the method is parsed.
+	 *
+	 * @param obj the context object of the currently parsed code block
+	 */
+	@Override
+	public void visitCode(Code obj) {
+		try {
+			possibleParmRegs.clear();
+			Method m = getMethod();
+			String methodSignature = m.getSignature();
+			String retSignature = SignatureUtils.getReturnSignature(methodSignature);
+			JavaClass returnClass = null;
+			int[] parmRegs = null;
 
-    @Override
-    public void sawOpcode(int seen) {
-        try {
-            stack.precomputation(this);
+			if (retSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && !knownImmutables.contains(retSignature)) {
+				List<String> parmTypes = SignatureUtils.getParameterSignatures(methodSignature);
+				for (int p = 0; p < parmTypes.size(); p++) {
+					String parmSignature = parmTypes.get(p);
+					if (parmSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)
+							&& !knownImmutables.contains(parmSignature)) {
+						if (returnClass == null) {
+							returnClass = Repository.lookupClass(SignatureUtils.trimSignature(retSignature));
+							parmRegs = RegisterUtils.getParameterRegisters(m);
+						}
 
-            if (seen == Const.ARETURN) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    int reg = item.getRegisterNumber();
-                    ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
-                    if (pu != null) {
-                        pu.setReturnPC(getPC());
-                    }
-                }
-            } else if (seen == Const.PUTFIELD) {
-                if (stack.getStackDepth() > 1) {
-                    OpcodeStack.Item item = stack.getStackItem(1);
-                    int reg = item.getRegisterNumber();
-                    ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
-                    if (pu != null) {
-                        pu.setAlteredPC(getPC());
-                    }
-                }
-            } else if (OpcodeUtils.isAStore(seen)) {
-                int reg = RegisterUtils.getAStoreReg(this, seen);
-                possibleParmRegs.remove(Integer.valueOf(reg));
-                if (possibleParmRegs.isEmpty()) {
-                    throw new StopOpcodeParsingException();
-                }
-            } else if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
-                processInvoke();
-            }
+						if (parmRegs != null) {
+							JavaClass parmClass = Repository.lookupClass(SignatureUtils.stripSignature(parmSignature));
+							if (parmClass.instanceOf(returnClass)) {
+								possibleParmRegs.put(Integer.valueOf(parmRegs[p]), new ParmUsage());
+							}
+						}
+					}
+				}
 
-        } finally {
-            stack.sawOpcode(this, seen);
-        }
-    }
+				if (!possibleParmRegs.isEmpty()) {
+					try {
+						stack.resetForMethodEntry(this);
+						super.visitCode(obj);
+						for (ParmUsage pu : possibleParmRegs.values()) {
+							if ((pu.returnPC >= 0) && (pu.alteredPC >= 0) && (pu.returnPC > pu.alteredPC)) {
+								bugReporter.reportBug(
+										new BugInstance(this, BugType.CFS_CONFUSING_FUNCTION_SEMANTICS.name(),
+												NORMAL_PRIORITY).addClass(this).addMethod(this)
+												.addSourceLine(this, pu.returnPC).addSourceLine(this, pu.alteredPC));
+							}
+						}
+					} catch (StopOpcodeParsingException e) {
+						// no parm regs left
+					}
+				}
+			}
+		} catch (ClassNotFoundException cnfe) {
+			bugReporter.reportMissingClass(cnfe);
+		}
+	}
 
-    private void processInvoke() {
-        String calledSig = getSigConstantOperand();
-        String calledRet = SignatureUtils.getReturnSignature(calledSig);
-        if (Values.SIG_VOID.equals(calledRet)) {
-            int calledObjOffset = SignatureUtils.getNumParameters(calledSig);
-            if (stack.getStackDepth() > calledObjOffset) {
-                OpcodeStack.Item item = stack.getStackItem(calledObjOffset);
-                int reg = item.getRegisterNumber();
-                ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
-                if (pu != null) {
-                    pu.setAlteredPC(getPC());
-                }
-            }
-        }
-    }
+	@Override
+	public void sawOpcode(int seen) {
+		try {
+			stack.precomputation(this);
 
-    /**
-     * represents a method parameter, when it was first altered, and when it was
-     * last returned
-     */
-    static class ParmUsage {
-        int returnPC = -1;
-        int alteredPC = -1;
+			if (seen == Const.ARETURN) {
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item item = stack.getStackItem(0);
+					int reg = item.getRegisterNumber();
+					ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
+					if (pu != null) {
+						pu.setReturnPC(getPC());
+					}
+				}
+			} else if (seen == Const.PUTFIELD) {
+				if (stack.getStackDepth() > 1) {
+					OpcodeStack.Item item = stack.getStackItem(1);
+					int reg = item.getRegisterNumber();
+					ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
+					if (pu != null) {
+						pu.setAlteredPC(getPC());
+					}
+				}
+			} else if (OpcodeUtils.isAStore(seen)) {
+				int reg = RegisterUtils.getAStoreReg(this, seen);
+				possibleParmRegs.remove(Integer.valueOf(reg));
+				if (possibleParmRegs.isEmpty()) {
+					throw new StopOpcodeParsingException();
+				}
+			} else if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
+				processInvoke();
+			}
 
-        void setReturnPC(int pc) {
-            returnPC = pc;
-        }
+		} finally {
+			stack.sawOpcode(this, seen);
+		}
+	}
 
-        void setAlteredPC(int pc) {
-            if (alteredPC < 0) {
-                alteredPC = pc;
-            }
-        }
+	private void processInvoke() {
+		String calledSig = getSigConstantOperand();
+		String calledRet = SignatureUtils.getReturnSignature(calledSig);
+		if (Values.SIG_VOID.equals(calledRet)) {
+			int calledObjOffset = SignatureUtils.getNumParameters(calledSig);
+			if (stack.getStackDepth() > calledObjOffset) {
+				OpcodeStack.Item item = stack.getStackItem(calledObjOffset);
+				int reg = item.getRegisterNumber();
+				ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
+				if (pu != null) {
+					pu.setAlteredPC(getPC());
+				}
+			}
+		}
+	}
 
-        @Override
-        public String toString() {
-            return ToString.build(this);
-        }
-    }
+	/**
+	 * represents a method parameter, when it was first altered, and when it was
+	 * last returned
+	 */
+	static class ParmUsage {
+		int returnPC = -1;
+		int alteredPC = -1;
+
+		void setReturnPC(int pc) {
+			returnPC = pc;
+		}
+
+		void setAlteredPC(int pc) {
+			if (alteredPC < 0) {
+				alteredPC = pc;
+			}
+		}
+
+		@Override
+		public String toString() {
+			return ToString.build(this);
+		}
+	}
 }
